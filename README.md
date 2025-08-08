@@ -44,6 +44,9 @@ Project Structure
   - api/hello.js
 - wrangler.toml
 
+Contributing
+- Use feature branches and open PRs; `main` is protected. Small changes and clear PR descriptions help reviews.
+
 Next Steps
 - Replace placeholder branding/assets.
 - Add game UI, state, and network logic.
