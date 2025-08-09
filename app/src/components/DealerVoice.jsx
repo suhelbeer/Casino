@@ -73,6 +73,10 @@ export default function DealerVoice({ enabled, event }) {
         speak(wrap)
         break
       }
+      case 'chat': {
+        speak(e.text)
+        break
+      }
       default:
         break
     }
