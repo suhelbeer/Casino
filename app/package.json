@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "test:single": "vitest run --single-thread",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },

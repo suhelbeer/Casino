@@ -5,6 +5,8 @@ import { formatCard } from '../game/deck.js'
 import { basicStrategy, formatSuggestion } from '../game/strategy.js'
 import StrategyHelp from './StrategyHelp.jsx'
 import { useEffect } from 'react'
+import DealerVoice from './DealerVoice.jsx'
+import useAmbientMusic from '../hooks/useAmbientMusic.js'
 
 function Card({ c, hidden = false, delayMs = 0 }) {
   const isRed = c?.suit === '♥' || c?.suit === '♦'
@@ -46,10 +48,10 @@ function Card({ c, hidden = false, delayMs = 0 }) {
         <div className='suit'>{suit}</div>
       </div>
       {isFace(rank) ? (
-        <>
-          <div className='watermark'>{suit}</div>
-          <div className='face-art'>{rank}</div>
-        </>
+        <div className='face-wrap'>
+          <div className='face top'>{faceSVG(rank, suit, isRed)}</div>
+          <div className='face bottom'>{faceSVG(rank, suit, isRed)}</div>
+        </div>
       ) : rank === 'A' ? (
         <div className='pip ace'>{suit}</div>
       ) : (
@@ -83,11 +85,150 @@ function getPipCoords(rank) {
   }
 }
 
+function faceSVG(rank, suit, isRed) {
+  const stroke = isRed ? '#b71c1c' : '#0b132b'
+  const gold = '#f1c40f'
+  const steel = '#b0bec5'
+  const robe = isRed ? '#ef9a9a' : '#90caf9'
+  const trim = isRed ? '#ffebee' : '#e3f2fd'
+  const gem = isRed ? '#ef5350' : '#64b5f6'
+  const motif = isRed ? '#b71c1c' : '#0b132b'
+  const size = 56
+
+  function SuitEmblem({ cx = 32, cy = 40, scale = 1 }) {
+    const s = 1 * scale
+    if (suit === '♥') {
+      return (
+        <g transform={`translate(${cx},${cy}) scale(${s})`}>
+          <path d='M0,8 C -6,2 -10,-1 -10,-6 C -10,-9 -8,-11 -5,-11 C -3,-11 -1,-10 0,-8 C 1,-10 3,-11 5,-11 C 8,-11 10,-9 10,-6 C 10,-1 6,2 0,8 Z' fill={gem} stroke={stroke} strokeWidth='1' />
+        </g>
+      )
+    }
+    if (suit === '♠') {
+      return (
+        <g transform={`translate(${cx},${cy}) scale(${s})`}>
+          <path d='M0,-8 C 5,-13 12,-8 12,-3 C 12,1 8,4 0,10 C -8,4 -12,1 -12,-3 C -12,-8 -5,-13 0,-8 Z' fill={gem} stroke={stroke} strokeWidth='1' />
+          <rect x='-2' y='10' width='4' height='6' fill={gold} stroke={stroke} strokeWidth='0.8' />
+        </g>
+      )
+    }
+    if (suit === '♦') {
+      return (
+        <g transform={`translate(${cx},${cy}) scale(${s})`}>
+          <polygon points='0,-10 8,0 0,10 -8,0' fill={gem} stroke={stroke} strokeWidth='1' />
+        </g>
+      )
+    }
+    // Clubs
+    return (
+      <g transform={`translate(${cx},${cy}) scale(${s})`}>
+        <circle cx='-5' cy='-6' r='5' fill={gem} stroke={stroke} strokeWidth='1' />
+        <circle cx='5' cy='-6' r='5' fill={gem} stroke={stroke} strokeWidth='1' />
+        <circle cx='0' cy='0' r='6' fill={gem} stroke={stroke} strokeWidth='1' />
+        <rect x='-2' y='6' width='4' height='6' fill={gold} stroke={stroke} strokeWidth='0.8' />
+      </g>
+    )
+  }
+
+  if (rank === 'K') {
+    return (
+      <svg width={size} height={size} viewBox='0 0 64 64' fill='none' aria-label='King'>
+        {/* Crown */}
+        <path d='M16 18 L24 10 L32 18 L40 10 L48 18 L48 24 L16 24 Z' fill={gold} stroke={stroke} strokeWidth='1.5' />
+        <circle cx='24' cy='12' r='2' fill={gem} stroke={stroke} strokeWidth='0.8' />
+        <circle cx='40' cy='12' r='2' fill={gem} stroke={stroke} strokeWidth='0.8' />
+        <circle cx='32' cy='18' r='2' fill={gem} stroke={stroke} strokeWidth='0.8' />
+        {/* Face */}
+        <rect x='24' y='24' width='16' height='10' rx='3' fill='#ffe0b2' stroke={stroke} strokeWidth='1' />
+        {/* Beard */}
+        <path d='M24 34 C28 38 36 38 40 34 L40 36 C36 40 28 40 24 36 Z' fill={steel} stroke={stroke} strokeWidth='1' />
+        {/* Robe */}
+        <path d='M18 36 H46 V48 C46 52 42 54 32 54 C22 54 18 52 18 48 Z' fill={robe} stroke={stroke} strokeWidth='1.5' />
+        <path d='M18 42 H46' stroke={trim} strokeWidth='2' />
+        {/* Suit motifs on robe */}
+        <g opacity='0.28' fill={motif} fontSize='6'>
+          <text x='22' y='46'>{suit}</text>
+          <text x='28' y='46'>{suit}</text>
+          <text x='34' y='46'>{suit}</text>
+          <text x='40' y='46'>{suit}</text>
+        </g>
+        {/* Emblem */}
+        <SuitEmblem cx={32} cy={40} scale={0.8} />
+        {/* Sword */}
+        <rect x='31' y='20' width='2' height='24' fill={steel} />
+        <rect x='28' y='28' width='8' height='2' fill={gold} />
+      </svg>
+    )
+  }
+
+  if (rank === 'Q') {
+    return (
+      <svg width={size} height={size} viewBox='0 0 64 64' fill='none' aria-label='Queen'>
+        {/* Tiara */}
+        <path d='M18 20 C22 14 42 14 46 20 L46 24 H18 Z' fill={gold} stroke={stroke} strokeWidth='1.5' />
+        <circle cx='32' cy='18' r='2.2' fill={gem} stroke={stroke} strokeWidth='0.8' />
+        {/* Face */}
+        <rect x='24' y='24' width='16' height='10' rx='3' fill='#ffecb3' stroke={stroke} strokeWidth='1' />
+        {/* Hair */}
+        <path d='M22 24 C22 20 26 18 32 18 C38 18 42 20 42 24' fill='none' stroke={stroke} strokeWidth='1.2' />
+        {/* Dress */}
+        <path d='M18 36 H46 L42 50 H22 Z' fill={robe} stroke={stroke} strokeWidth='1.4' />
+        <path d='M22 42 H42' stroke={trim} strokeWidth='2' />
+        {/* Flower/Scepter */}
+        <circle cx='44' cy='32' r='3' fill={gem} stroke={stroke} strokeWidth='1' />
+        <path d='M44 35 L44 44' stroke={steel} strokeWidth='1.5' />
+        {/* Suit motif hem */}
+        <g opacity='0.25' fill={motif} fontSize='6'>
+          <text x='24' y='48'>{suit}</text>
+          <text x='28' y='48'>{suit}</text>
+          <text x='32' y='48'>{suit}</text>
+          <text x='36' y='48'>{suit}</text>
+          <text x='40' y='48'>{suit}</text>
+        </g>
+        {/* Locket emblem */}
+        <SuitEmblem cx={32} cy={36} scale={0.7} />
+      </svg>
+    )
+  }
+
+  // Jack
+  return (
+    <svg width={size} height={size} viewBox='0 0 64 64' fill='none' aria-label='Jack'>
+      {/* Cap */}
+      <path d='M22 18 H42 L38 14 H26 Z' fill={gold} stroke={stroke} strokeWidth='1' />
+      <path d='M28 14 L32 12 L36 14' stroke={gem} strokeWidth='1.4' />
+      {/* Face */}
+      <rect x='26' y='20' width='12' height='9' rx='3' fill='#ffe0b2' stroke={stroke} strokeWidth='1' />
+      {/* Collar */}
+      <path d='M24 30 H40 L38 34 H26 Z' fill={trim} stroke={stroke} strokeWidth='1' />
+      {/* Tunic */}
+      <rect x='22' y='34' width='20' height='14' rx='2' fill={robe} stroke={stroke} strokeWidth='1.2' />
+      <path d='M22 40 H42' stroke={trim} strokeWidth='2' />
+      {/* Suit pattern band */}
+      <g opacity='0.28' fill={motif} fontSize='6'>
+        <text x='24' y='44'>{suit}</text>
+        <text x='28' y='44'>{suit}</text>
+        <text x='32' y='44'>{suit}</text>
+        <text x='36' y='44'>{suit}</text>
+        <text x='40' y='44'>{suit}</text>
+      </g>
+      {/* Chest badge */}
+      <SuitEmblem cx={32} cy={38} scale={0.65} />
+      {/* Dagger */}
+      <rect x='32' y='28' width='2' height='12' fill={steel} />
+    </svg>
+  )
+}
+
 export default function GameTable({ onStrategyContext }) {
   const rng = useMemo(() => undefined, [])
   const [state, setState] = useState(null)
   const [showHelp, setShowHelp] = useState(false)
   const [history, setHistory] = useState([])
+  const [voiceOn, setVoiceOn] = useState(true)
+  const [musicOn, setMusicOn] = useState(false)
+  const [voiceEvent, setVoiceEvent] = useState(null)
+  const music = useAmbientMusic()
 
   const phase = state?.phase ?? 'idle'
   const player = state?.player ?? []
@@ -99,6 +240,15 @@ export default function GameTable({ onStrategyContext }) {
     if (s.phase === 'ended' && s.outcome) {
       recordOutcome(s.outcome)
     }
+    const dealerUpLocal = s.dealer[0]
+    setVoiceEvent({
+      id: Date.now() + '-deal',
+      type: 'deal',
+      player: s.player,
+      dealerUp: dealerUpLocal,
+      playerTotal: handValue(s.player)
+    })
+    if (musicOn && !music.enabled) music.start()
   }
   function onHit() {
     setState(s => {
@@ -106,6 +256,8 @@ export default function GameTable({ onStrategyContext }) {
       if (next.phase === 'ended' && next.outcome) {
         recordOutcome(next.outcome)
       }
+      const card = next.player[next.player.length - 1]
+      setVoiceEvent({ id: Date.now() + '-hit', type: 'hit', card, playerTotal: handValue(next.player) })
       return next
     })
   }
@@ -115,6 +267,7 @@ export default function GameTable({ onStrategyContext }) {
       if (next.phase === 'ended' && next.outcome) {
         recordOutcome(next.outcome)
       }
+      setVoiceEvent({ id: Date.now() + '-stand', type: 'stand' })
       return next
     })
   }
@@ -214,6 +367,10 @@ export default function GameTable({ onStrategyContext }) {
           )}
         </div>
         <div style={{ marginTop: 8, fontSize: 12, opacity: 0.7 }}>Press ? for strategy help</div>
+        <div style={{ marginTop: 10, display: 'flex', gap: 8, justifyContent: 'center' }}>
+          <Toggle on={voiceOn} onClick={() => setVoiceOn(v => !v)}>Voice</Toggle>
+          <Toggle on={musicOn} onClick={() => { const next = !musicOn; setMusicOn(next); if (next) music.start(); else music.stop() }}>Music</Toggle>
+        </div>
       </div>
 
       <StrategyHelp open={showHelp} onClose={() => setShowHelp(false)} />
@@ -252,6 +409,8 @@ export default function GameTable({ onStrategyContext }) {
           </tbody>
         </table>
       </div>
+      {/* Voice dealer announcer */}
+      <DealerVoice enabled={voiceOn} event={voiceEventFor(state, voiceEvent)} />
     </div>
   )
 }
@@ -298,6 +457,16 @@ function Btn({ onClick, children, variant, highlight }) {
     }}>
       {children}
     </button>
+  )
+}
+
+function Toggle({ on, onClick, children }) {
+  return (
+    <button onClick={onClick} className='btn' style={{
+      padding: '8px 12px', borderRadius: 9999, fontSize: 12, fontWeight: 700,
+      background: on ? '#9fffc7' : 'transparent', color: on ? '#0b132b' : '#e0fbfc',
+      border: on ? 0 : '1px solid rgba(255,255,255,0.35)'
+    }}>{children}</button>
   )
 }
 
@@ -365,4 +534,19 @@ function upRankValue(up) {
   if (up.rank === 'A') return 11
   if (['K', 'Q', 'J'].includes(up.rank)) return 10
   return Number(up.rank)
+}
+
+function voiceEventFor(state, pending) {
+  if (!state) return pending
+  if (state.phase === 'ended' && state.outcome && (!pending || !String(pending.id).includes('-end'))) {
+    return {
+      id: Date.now() + '-end',
+      type: 'end',
+      outcome: state.outcome,
+      outcomeLabel: outcomeLabel(state.outcome),
+      playerTotal: handValue(state.player || []),
+      dealerTotal: handValue(state.dealer || [])
+    }
+  }
+  return pending
 }

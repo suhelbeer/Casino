@@ -1,20 +1,26 @@
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 
-// Basic fetch mock to avoid real network during tests
-if (!global.fetch) {
-  global.fetch = vi.fn()
-}
-
+// Ensure we can stub fetch regardless of env support
 beforeEach(() => {
-  global.fetch.mockImplementation(() =>
-    Promise.resolve({
+  if (!global.fetch) {
+    global.fetch = vi.fn()
+  }
+  if (!vi.isMockFunction(global.fetch)) {
+    vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ ok: true, service: 'test', time: '1970-01-01T00:00:00.000Z' })
     })
-  )
+  } else {
+    global.fetch.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ok: true, service: 'test', time: '1970-01-01T00:00:00.000Z' })
+      })
+    )
+  }
 })
 
 afterEach(() => {
-  vi.clearAllMocks()
+  vi.restoreAllMocks()
 })

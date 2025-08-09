@@ -7,3 +7,4 @@ pages_build_output_dir = "app/dist"
 [vars]
 # Add your environment variables here, e.g. API keys
 # EXAMPLE_API_KEY = ""
+VERSION = "0.0.1-phase0"
