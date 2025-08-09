@@ -33,6 +33,16 @@ API Example
 - POST /api/dealer → proxy to an LLM; send `{ messages: [...] }` and receive `{ reply }`. Requires `OPENAI_API_KEY` secret.
 - Add the key with `wrangler secret put OPENAI_API_KEY`.
 
+Local API Key (Wrangler dev)
+- Create a file named `.dev.vars` at the repo root (next to `wrangler.toml`) with:
+  - `OPENAI_API_KEY=sk-...`
+- Run local preview with functions: `wrangler pages dev app/dist` (serves http://localhost:8788)
+- Quick test:
+  - `curl -X POST -H 'content-type: application/json' -d '{"messages":[{"role":"user","content":"Hello"}]}' http://localhost:8788/api/dealer`
+- Notes:
+  - Do not commit secrets. `.dev.vars` is git-ignored; use `.dev.vars.example` as a template.
+  - For production/preview, set the secret in your Cloudflare Pages project with `wrangler pages secret put OPENAI_API_KEY`.
+
 PWA Notes
 - Manifest: `app/public/manifest.webmanifest`
 - Service Worker: `app/public/sw.js` (basic cache strategy)

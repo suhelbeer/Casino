@@ -1,0 +1,6 @@
+# Copy this file to `.dev.vars` at the repo root for local dev.
+# Wrangler will load values from `.dev.vars` when running `wrangler pages dev`.
+
+# OpenAI API key for /api/dealer
+OPENAI_API_KEY=sk-your-openai-api-key
+
