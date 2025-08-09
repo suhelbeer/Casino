@@ -30,6 +30,8 @@ Deployment (Cloudflare Pages)
 
 API Example
 - GET /api/hello → JSON health response.
+- POST /api/dealer → proxy to an LLM; send `{ messages: [...] }` and receive `{ reply }`. Requires `OPENAI_API_KEY` secret.
+- Add the key with `wrangler secret put OPENAI_API_KEY`.
 
 PWA Notes
 - Manifest: `app/public/manifest.webmanifest`
@@ -56,3 +58,4 @@ Features
 - Game engine: shuffling/dealing, hit/stand, outcome resolution.
 - Basic strategy hints: UI highlights recommended action based on player/dealer up-card.
 - Strategy help modal: compact chart (S17, no splits/surrender). Open via Strategy button or press `?`.
+- Voice dealer: use the Chat button to speak with the dealer. Dealer replies are powered by an LLM and spoken via Web Speech.

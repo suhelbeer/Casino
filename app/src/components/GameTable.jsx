@@ -6,6 +6,7 @@ import { basicStrategy, formatSuggestion } from '../game/strategy.js'
 import StrategyHelp from './StrategyHelp.jsx'
 import { useEffect } from 'react'
 import DealerVoice from './DealerVoice.jsx'
+import DealerChat from './DealerChat.jsx'
 import useAmbientMusic from '../hooks/useAmbientMusic.js'
 
 function Card({ c, hidden = false, delayMs = 0 }) {
@@ -371,6 +372,7 @@ export default function GameTable({ onStrategyContext }) {
           <Toggle on={voiceOn} onClick={() => setVoiceOn(v => !v)}>Voice</Toggle>
           <Toggle on={musicOn} onClick={() => { const next = !musicOn; setMusicOn(next); if (next) music.start(); else music.stop() }}>Music</Toggle>
         </div>
+        <DealerChat onSpeak={text => setVoiceEvent({ id: Date.now() + '-chat', type: 'chat', text })} />
       </div>
 
       <StrategyHelp open={showHelp} onClose={() => setShowHelp(false)} />
