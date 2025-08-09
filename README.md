@@ -52,3 +52,7 @@ Next Steps
 - Add game UI, state, and network logic.
 - Configure environment variables in `wrangler.toml` under `[vars]` if needed.
 
+Features
+- Game engine: shuffling/dealing, hit/stand, outcome resolution.
+- Basic strategy hints: UI highlights recommended action based on player/dealer up-card.
+- Strategy help modal: compact chart (S17, no splits/surrender). Open via Strategy button or press `?`.

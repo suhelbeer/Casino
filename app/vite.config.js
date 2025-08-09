@@ -7,7 +7,8 @@ export default defineConfig({
     globals: true,
     setupFiles: './test/setup.js',
     css: true,
-    coverage: { provider: 'v8', reporter: ['text', 'html'] }
+    coverage: { provider: 'v8', reporter: ['text', 'html'] },
+    poolOptions: { threads: { singleThread: true } }
   },
   plugins: [react()],
   server: { port: 5173 },
